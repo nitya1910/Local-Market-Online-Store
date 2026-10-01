@@ -1,33 +1,102 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import CartContext from '../context/CartContext';
-import { ShoppingCart, User, LogOut } from 'lucide-react';
+import AppContext from '../context/AppContext';
+import { ShoppingCart, User, LogOut, Search, Heart, Menu, X } from 'lucide-react';
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const { cartItems } = useContext(CartContext);
+  const { wishlist } = useContext(AppContext);
   const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [keyword, setKeyword] = useState('');
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (keyword.trim()) {
+      navigate(`/products?keyword=${keyword}`);
+      setIsMenuOpen(false);
+    } else {
+      navigate('/products');
+    }
+  };
+
   return (
     <nav className="navbar">
-      <div className="container">
-        <Link to="/" className="nav-brand">LocalMarket</Link>
-        <div className="nav-links">
-          <Link to="/products">Products</Link>
+      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '100%' }}>
+        {/* Logo */}
+        <Link to="/" className="nav-brand" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <span style={{ fontSize: '2rem' }}>🌿</span>
+          LocalMarket
+        </Link>
+
+        {/* Desktop Links */}
+        <div className="nav-links" style={{ display: 'none' }}>
+          <Link to="/">Home</Link>
+          <Link to="/products">Shop</Link>
+          <Link to="/categories">Categories</Link>
+          <Link to="/vendors">Vendors</Link>
+          <Link to="/about">About</Link>
+          <Link to="/contact">Contact</Link>
+        </div>
+        
+        {/* Make desktop links visible via CSS in index.css (handled later or inline) */}
+        <style>{`
+          @media (min-width: 992px) {
+            .nav-links { display: flex !important; gap: 1.5rem; align-items: center; }
+            .mobile-menu-btn { display: none !important; }
+            .mobile-menu { display: none !important; }
+          }
+          .nav-actions { display: flex; gap: 1.25rem; align-items: center; }
+          .nav-icon { color: var(--text); cursor: pointer; transition: color 0.2s; position: relative; }
+          .nav-icon:hover { color: var(--primary); }
+          .search-bar { display: none; }
+          @media (min-width: 768px) {
+            .search-bar { display: flex; align-items: center; background: var(--background); border-radius: 9999px; padding: 0.4rem 1rem; border: 1px solid var(--border); }
+            .search-bar input { border: none; background: transparent; outline: none; padding-left: 0.5rem; width: 200px; font-family: inherit; }
+          }
+        `}</style>
+
+        {/* Search Bar (Desktop) */}
+        <form onSubmit={handleSearch} className="search-bar">
+          <Search size={18} color="var(--text-light)" />
+          <input 
+            type="text" 
+            placeholder="Search products..." 
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+          />
+        </form>
+
+        {/* Icons & Actions */}
+        <div className="nav-actions">
+          <Link to="/wishlist" className="nav-icon" title="Wishlist">
+            <Heart size={22} />
+            {wishlist?.length > 0 && (
+              <span style={{ 
+                position: 'absolute', top: '-8px', right: '-8px', 
+                background: 'var(--primary)', color: 'white', borderRadius: '50%', 
+                width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 'bold'
+              }}>
+                {wishlist.length}
+              </span>
+            )}
+          </Link>
           
-          <Link to="/cart" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-            <ShoppingCart size={20} />
+          <Link to="/cart" className="nav-icon" title="Cart">
+            <ShoppingCart size={22} />
             {cartItems.length > 0 && (
               <span style={{ 
                 position: 'absolute', top: '-8px', right: '-8px', 
-                background: 'red', color: 'white', borderRadius: '50%', 
-                padding: '2px 6px', fontSize: '10px' 
+                background: 'var(--error)', color: 'white', borderRadius: '50%', 
+                width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 'bold'
               }}>
                 {cartItems.reduce((acc, item) => acc + item.qty, 0)}
               </span>
@@ -36,21 +105,52 @@ const Navbar = () => {
 
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <Link to={`/${user.role}/dashboard`} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <User size={20} /> {user.name} ({user.role})
+              <Link to={`/${user.role}/dashboard`} className="nav-icon" title="Profile" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <User size={22} />
               </Link>
-              <button onClick={handleLogout} className="btn btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.25rem 0.5rem' }}>
-                <LogOut size={16} /> Logout
+              <button onClick={handleLogout} className="nav-icon" title="Logout">
+                <LogOut size={22} />
               </button>
             </div>
           ) : (
-            <>
-              <Link to="/login">Login</Link>
-              <Link to="/register" className="btn btn-primary">Sign Up</Link>
-            </>
+            <Link to="/login" className="nav-icon" title="Login">
+              <User size={22} />
+            </Link>
           )}
+
+          <button className="mobile-menu-btn nav-icon" onClick={() => setIsMenuOpen(!isMenuOpen)} style={{ display: 'block' }}>
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="mobile-menu" style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--surface)', padding: '1rem', borderBottom: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '1rem', boxShadow: 'var(--shadow-md)' }}>
+          <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', background: 'var(--background)', borderRadius: '9999px', padding: '0.5rem 1rem', border: '1px solid var(--border)' }}>
+            <Search size={18} color="var(--text-light)" />
+            <input 
+              type="text" 
+              placeholder="Search products..." 
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              style={{ border: 'none', background: 'transparent', outline: 'none', paddingLeft: '0.5rem', width: '100%', fontFamily: 'inherit' }} 
+            />
+          </form>
+          <Link to="/" onClick={() => setIsMenuOpen(false)}>Home</Link>
+          <Link to="/products" onClick={() => setIsMenuOpen(false)}>Shop</Link>
+          <Link to="/categories" onClick={() => setIsMenuOpen(false)}>Categories</Link>
+          <Link to="/vendors" onClick={() => setIsMenuOpen(false)}>Vendors</Link>
+          <Link to="/about" onClick={() => setIsMenuOpen(false)}>About</Link>
+          <Link to="/contact" onClick={() => setIsMenuOpen(false)}>Contact</Link>
+          {!user && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
+              <Link to="/login" className="btn btn-outline" style={{ textAlign: 'center' }} onClick={() => setIsMenuOpen(false)}>Login</Link>
+              <Link to="/register" className="btn btn-primary" style={{ textAlign: 'center' }} onClick={() => setIsMenuOpen(false)}>Sign Up</Link>
+            </div>
+          )}
+        </div>
+      )}
     </nav>
   );
 };
