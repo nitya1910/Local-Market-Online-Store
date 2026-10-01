@@ -24,16 +24,16 @@ const Home = () => {
   }, []);
 
   const categories = [
-    { id: 1, name: 'Fresh Produce', icon: '🍅', color: '#fef2f2' },
-    { id: 2, name: 'Bakery', icon: '🥖', color: '#fffbeb' },
+    { id: 1, name: 'Fruits & Vegetables', icon: '🍎', color: '#fef2f2' },
+    { id: 2, name: 'Bakery', icon: '🍞', color: '#fffbeb' },
     { id: 3, name: 'Dairy', icon: '🥛', color: '#f0fdfa' },
-    { id: 4, name: 'Handcrafted', icon: '🏺', color: '#f5f3ff' },
+    { id: 4, name: 'Handmade Products', icon: '🧶', color: '#f5f3ff' },
   ];
 
   const vendors = [
-    { id: 1, name: 'Green Valley Farms', type: 'Organic Produce', image: 'https://images.unsplash.com/photo-1595858602983-481d6d03d0d8?auto=format&fit=crop&w=300&q=80' },
-    { id: 2, name: 'Sunny Side Bakery', type: 'Fresh Breads', image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=300&q=80' },
-    { id: 3, name: 'Artisan Crafts Co.', type: 'Handmade Goods', image: 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?auto=format&fit=crop&w=300&q=80' },
+    { id: 1, name: 'Green Valley Farm', type: 'Organic Produce', image: 'https://images.unsplash.com/photo-1595858602983-481d6d03d0d8?auto=format&fit=crop&w=300&q=80' },
+    { id: 2, name: 'Artisan Bakery Co.', type: 'Fresh Breads', image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=300&q=80' },
+    { id: 3, name: 'Sunrise Dairy', type: 'Dairy Products', image: 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?auto=format&fit=crop&w=300&q=80' },
   ];
 
   const testimonials = [
@@ -193,7 +193,7 @@ const Home = () => {
                 <div>
                   <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.2rem' }}>{vendor.name}</h3>
                   <p style={{ color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.8rem' }}>{vendor.type}</p>
-                  <Link to="/vendors" style={{ color: 'var(--primary)', fontSize: '0.9rem', fontWeight: '600' }}>Visit Store &rarr;</Link>
+                  <Link to={`/products?vendor=${encodeURIComponent(vendor.name)}`} style={{ color: 'var(--primary)', fontSize: '0.9rem', fontWeight: '600' }}>Visit Store &rarr;</Link>
                 </div>
               </div>
             ))}

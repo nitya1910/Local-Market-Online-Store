@@ -73,7 +73,7 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop Links */}
-        <div className="nav-links" style={{ display: 'none' }}>
+        <div className="nav-links">
           <Link to="/">Home</Link>
           <Link to="/products">Shop</Link>
           <Link to="/categories">Categories</Link>
@@ -84,8 +84,9 @@ const Navbar = () => {
         
         {/* Make desktop links visible via CSS in index.css (handled later or inline) */}
         <style>{`
+          .nav-links { display: none; }
           @media (min-width: 992px) {
-            .nav-links { display: flex !important; gap: 1.5rem; align-items: center; }
+            .nav-links { display: flex; gap: 1.5rem; align-items: center; }
             .mobile-menu-btn { display: none !important; }
             .mobile-menu { display: none !important; }
           }

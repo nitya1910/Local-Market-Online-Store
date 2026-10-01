@@ -37,10 +37,14 @@ const Products = () => {
         // Fallback to mock data if API fails to keep UI functional
         console.warn('API Failed, using mock data');
         setProducts([
-          { _id: '1', name: 'Organic Bananas', price: 2.99, category: 'Fruits & Vegetables', image: 'https://images.unsplash.com/photo-1571501474554-25b0cb9dd020?w=300', vendor: { storeName: 'Green Valley Farms' }, rating: 5, numReviews: 12, createdAt: '2023-01-01' },
-          { _id: '2', name: 'Fresh Sourdough Bread', price: 6.50, category: 'Bakery', image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300', vendor: { storeName: 'Sunny Side Bakery' }, rating: 4.5, numReviews: 8, createdAt: '2023-01-05' },
-          { _id: '3', name: 'Farm Fresh Milk', price: 4.20, category: 'Dairy', image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=300', vendor: { storeName: 'Happy Cows Dairy' }, rating: 4.8, numReviews: 24, createdAt: '2023-01-10' },
-          { _id: '4', name: 'Handmade Ceramic Mug', price: 18.00, category: 'Handmade Products', image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=300', vendor: { storeName: 'Artisan Crafts Co.' }, rating: 5, numReviews: 5, createdAt: '2023-01-15' },
+          { _id: '1', name: 'Organic Bananas', price: 2.99, category: 'Fruits & Vegetables', image: 'https://images.unsplash.com/photo-1571501474554-25b0cb9dd020?w=300', vendor: { storeName: 'Green Valley Farm', id: 'v1' }, rating: 5, numReviews: 12, createdAt: '2023-01-01', countInStock: 50 },
+          { _id: '2', name: 'Fresh Sourdough Bread', price: 6.50, category: 'Bakery', image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300', vendor: { storeName: 'Artisan Bakery Co.', id: 'v2' }, rating: 4.5, numReviews: 8, createdAt: '2023-01-05', countInStock: 20 },
+          { _id: '3', name: 'Farm Fresh Milk', price: 4.20, category: 'Dairy', image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=300', vendor: { storeName: 'Sunrise Dairy', id: 'v3' }, rating: 4.8, numReviews: 24, createdAt: '2023-01-10', countInStock: 30 },
+          { _id: '4', name: 'Handmade Ceramic Mug', price: 18.00, category: 'Handmade Products', image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=300', vendor: { storeName: 'Handcrafted Haven', id: 'v4' }, rating: 5, numReviews: 5, createdAt: '2023-01-15', countInStock: 10 },
+          { _id: '5', name: 'Raw Local Honey', price: 12.50, category: 'Organic Products', image: 'https://images.unsplash.com/photo-1587049352847-4d4b1263bbca?w=300', vendor: { storeName: 'Pure Honey Apiaries', id: 'v5' }, rating: 5.0, numReviews: 45, createdAt: '2023-02-01', countInStock: 15 },
+          { _id: '6', name: 'Cold Pressed Apple Juice', price: 5.99, category: 'Beverages', image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=300', vendor: { storeName: 'Green Valley Farm', id: 'v1' }, rating: 4.7, numReviews: 18, createdAt: '2023-02-05', countInStock: 25 },
+          { _id: '7', name: 'Woven Basket', price: 24.00, category: 'Local Crafts', image: 'https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?w=300', vendor: { storeName: 'Handcrafted Haven', id: 'v4' }, rating: 4.9, numReviews: 11, createdAt: '2023-02-10', countInStock: 8 },
+          { _id: '8', name: 'Fresh Atlantic Salmon', price: 15.99, category: 'Organic Products', image: 'https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?w=300', vendor: { storeName: 'Ocean Fresh Catch', id: 'v6' }, rating: 4.6, numReviews: 32, createdAt: '2023-02-12', countInStock: 12 },
         ]);
         setLoading(false);
       }
@@ -48,11 +52,17 @@ const Products = () => {
     fetchProducts();
   }, [keyword]);
 
+  const queryVendor = new URLSearchParams(search).get('vendor') || '';
+
   const filteredAndSortedProducts = useMemo(() => {
     let result = [...products];
 
     if (category) {
       result = result.filter(p => p.category === category);
+    }
+    
+    if (queryVendor) {
+      result = result.filter(p => p.vendor?.storeName === queryVendor);
     }
 
     if (priceRange) {
@@ -80,7 +90,7 @@ const Products = () => {
     }
 
     return result;
-  }, [products, category, sort, priceRange]);
+  }, [products, category, sort, priceRange, queryVendor]);
 
   const categories = ['All', 'Fruits & Vegetables', 'Bakery', 'Dairy', 'Handmade Products', 'Organic Products', 'Beverages', 'Local Crafts'];
 

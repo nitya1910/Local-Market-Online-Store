@@ -11,6 +11,9 @@ import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Wishlist from './pages/Wishlist';
 import Vendors from './pages/Vendors';
+import Categories from './pages/Categories';
+import About from './pages/About';
+import Contact from './pages/Contact';
 import CustomerDashboard from './pages/CustomerDashboard';
 import VendorDashboard from './pages/VendorDashboard';
 import AdminDashboard from './pages/AdminDashboard';
@@ -119,6 +122,9 @@ function App() {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/vendors" element={<Vendors />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
             
             {/* Protected Routes placeholder */}
             <Route path="/customer/dashboard" element={<CustomerDashboard />} />

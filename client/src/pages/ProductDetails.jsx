@@ -112,9 +112,23 @@ const ProductDetails = () => {
               </span>
             </div>
             <h1 style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--text)', lineHeight: '1.2', marginBottom: '0.5rem' }}>{product.name}</h1>
-            <p style={{ color: 'var(--text-light)', fontSize: '1.1rem' }}>
-              Sold by <Link to="/vendors" style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'none' }}>{product.vendor?.storeName || 'Local Vendor'}</Link>
-            </p>
+            
+            {/* Vendor Details Card */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'var(--surface)', borderRadius: '0.75rem', marginTop: '1rem', border: '1px solid var(--border)' }}>
+              <div style={{ width: '50px', height: '50px', borderRadius: '50%', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', color: 'white', fontWeight: 'bold' }}>
+                {product.vendor?.storeName?.charAt(0) || 'V'}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '0.9rem', color: 'var(--text-light)' }}>Sold by</div>
+                <Link to={`/products?vendor=${encodeURIComponent(product.vendor?.storeName || 'Local Vendor')}`} style={{ color: 'var(--primary)', fontWeight: '700', textDecoration: 'none', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                  {product.vendor?.storeName || 'Local Vendor'}
+                </Link>
+              </div>
+              <div style={{ textAlign: 'right', fontSize: '0.85rem', color: 'var(--text-light)' }}>
+                <div>📍 {product.vendor?.location || 'Local Area'}</div>
+                <div>Member since {product.vendor?.joinedDate || '2023'}</div>
+              </div>
+            </div>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fbbf24', fontSize: '1.1rem' }}>
