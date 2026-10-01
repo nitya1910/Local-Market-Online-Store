@@ -1,9 +1,9 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import CartContext from '../context/CartContext';
 import AppContext from '../context/AppContext';
-import { ShoppingCart, User, LogOut, Search, Heart, Menu, X } from 'lucide-react';
+import { ShoppingCart, User, LogOut, Search, Heart, Menu, X, Sun, Moon } from 'lucide-react';
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
@@ -12,6 +12,41 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [keyword, setKeyword] = useState('');
+  
+  // Theme and Animations
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [cartAnimate, setCartAnimate] = useState(false);
+  
+  useEffect(() => {
+    // Check initial theme
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      setIsDarkMode(true);
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+    if (!isDarkMode) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+    }
+  };
+
+  const totalCartItems = cartItems.reduce((acc, item) => acc + item.qty, 0);
+
+  useEffect(() => {
+    if (totalCartItems > 0) {
+      setCartAnimate(true);
+      const timer = setTimeout(() => setCartAnimate(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [totalCartItems]);
 
   const handleLogout = () => {
     logout();
@@ -55,12 +90,13 @@ const Navbar = () => {
             .mobile-menu { display: none !important; }
           }
           .nav-actions { display: flex; gap: 1.25rem; align-items: center; }
-          .nav-icon { color: var(--text); cursor: pointer; transition: color 0.2s; position: relative; }
+          .nav-icon { color: var(--text); cursor: pointer; transition: color 0.2s; position: relative; display: flex; align-items: center; justify-content: center; }
           .nav-icon:hover { color: var(--primary); }
           .search-bar { display: none; }
           @media (min-width: 768px) {
-            .search-bar { display: flex; align-items: center; background: var(--background); border-radius: 9999px; padding: 0.4rem 1rem; border: 1px solid var(--border); }
-            .search-bar input { border: none; background: transparent; outline: none; padding-left: 0.5rem; width: 200px; font-family: inherit; }
+            .search-bar { display: flex; align-items: center; background: var(--background); border-radius: 9999px; padding: 0.4rem 1rem; border: 1px solid var(--border); transition: all 0.3s; }
+            .search-bar:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
+            .search-bar input { border: none; background: transparent; outline: none; padding-left: 0.5rem; width: 180px; font-family: inherit; color: var(--text); }
           }
         `}</style>
 
@@ -77,10 +113,14 @@ const Navbar = () => {
 
         {/* Icons & Actions */}
         <div className="nav-actions">
+          <button onClick={toggleTheme} className="nav-icon" title="Toggle Theme">
+            {isDarkMode ? <Sun size={22} /> : <Moon size={22} />}
+          </button>
+          
           <Link to="/wishlist" className="nav-icon" title="Wishlist">
             <Heart size={22} />
             {wishlist?.length > 0 && (
-              <span style={{ 
+              <span className="animate-pop-in" style={{ 
                 position: 'absolute', top: '-8px', right: '-8px', 
                 background: 'var(--primary)', color: 'white', borderRadius: '50%', 
                 width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 'bold'
@@ -90,22 +130,22 @@ const Navbar = () => {
             )}
           </Link>
           
-          <Link to="/cart" className="nav-icon" title="Cart">
+          <Link to="/cart" className={`nav-icon ${cartAnimate ? 'animate-cart-bounce' : ''}`} title="Cart">
             <ShoppingCart size={22} />
-            {cartItems.length > 0 && (
-              <span style={{ 
+            {totalCartItems > 0 && (
+              <span className="animate-pop-in" style={{ 
                 position: 'absolute', top: '-8px', right: '-8px', 
                 background: 'var(--error)', color: 'white', borderRadius: '50%', 
                 width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 'bold'
               }}>
-                {cartItems.reduce((acc, item) => acc + item.qty, 0)}
+                {totalCartItems}
               </span>
             )}
           </Link>
 
           {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <Link to={`/${user.role}/dashboard`} className="nav-icon" title="Profile" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Link to={`/${user.role}/dashboard`} className="nav-icon" title="Profile">
                 <User size={22} />
               </Link>
               <button onClick={handleLogout} className="nav-icon" title="Logout">
@@ -126,7 +166,7 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="mobile-menu" style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--surface)', padding: '1rem', borderBottom: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '1rem', boxShadow: 'var(--shadow-md)' }}>
+        <div className="mobile-menu animate-slide-up" style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--surface)', padding: '1rem', borderBottom: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '1rem', boxShadow: 'var(--shadow-md)' }}>
           <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', background: 'var(--background)', borderRadius: '9999px', padding: '0.5rem 1rem', border: '1px solid var(--border)' }}>
             <Search size={18} color="var(--text-light)" />
             <input 
@@ -134,7 +174,7 @@ const Navbar = () => {
               placeholder="Search products..." 
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
-              style={{ border: 'none', background: 'transparent', outline: 'none', paddingLeft: '0.5rem', width: '100%', fontFamily: 'inherit' }} 
+              style={{ border: 'none', background: 'transparent', outline: 'none', paddingLeft: '0.5rem', width: '100%', fontFamily: 'inherit', color: 'var(--text)' }} 
             />
           </form>
           <Link to="/" onClick={() => setIsMenuOpen(false)}>Home</Link>

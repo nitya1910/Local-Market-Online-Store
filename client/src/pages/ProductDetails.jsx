@@ -85,8 +85,14 @@ const ProductDetails = () => {
         `}</style>
 
         {/* Product Image */}
-        <div className="product-image-container animate-fade-in">
-          <img src={product.image} alt={product.name} style={{ width: '100%', height: 'auto', aspectRatio: '4/3', objectFit: 'cover', display: 'block' }} />
+        <div className="product-image-container animate-fade-in" style={{ overflow: 'hidden' }}>
+          <img 
+            src={product.image} 
+            alt={product.name} 
+            style={{ width: '100%', height: 'auto', aspectRatio: '4/3', objectFit: 'cover', display: 'block', transition: 'transform 0.4s ease' }} 
+            onMouseOver={e => e.currentTarget.style.transform = 'scale(1.1)'}
+            onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+          />
           <button 
             onClick={() => toggleWishlist(product)}
             style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'white', padding: '0.75rem', borderRadius: '50%', color: isWishlisted ? 'var(--primary)' : 'var(--text-light)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-lg)', transition: 'transform 0.2s' }}
